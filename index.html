@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Colorful To‑Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #050816;
+      --card: #0b1220;
+      --accent: #f97316;
+      --accent-soft: rgba(249, 115, 22, 0.16);
+      --danger: #fb7185;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(148, 163, 184, 0.25);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1d2335 0, #050816 45%, #020617 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      color: #e5e7eb;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.88));
+      border-radius: 18px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 22px 45px rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(12px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 1.2rem;
+      letter-spacing: 0.03em;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(248, 250, 252, 0.1);
+      color: #fed7aa;
+    }
+
+    .subtitle {
+      margin: 0 0 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      color: inherit;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    input[type="text"]::placeholder {
+      color: #6b7280;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      padding: 9px 12px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f97316, #fb923c);
+      color: #111827;
+      font-weight: 600;
+      box-shadow: 0 8px 18px rgba(249, 115, 22, 0.45);
+      white-space: nowrap;
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.8);
+    }
+
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 0.7rem;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-muted);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 260px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 7px 8px;
+      margin-bottom: 6px;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(30, 64, 175, 0.55);
+      font-size: 0.82rem;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border 0.12s ease;
+    }
+
+    li:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.85);
+      border-color: rgba(59, 130, 246, 0.9);
+    }
+
+    .task-main {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .check {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      border: 1px solid rgba(148, 163, 184, 0.75);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+
+    .text {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .done .text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .done .check {
+      background: #22c55e;
+      border-color: #22c55e;
+    }
+
+    .chip {
+      font-size: 0.65rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(37, 99, 235, 0.18);
+      color: #bfdbfe;
+      flex-shrink: 0;
+    }
+
+    .chip.low { background: rgba(34, 197, 94, 0.18); color: #bbf7d0; }
+    .chip.high { background: rgba(239, 68, 68, 0.22); color: #fecaca; }
+
+    .text-danger { color: var(--danger); }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      gap: 8px;
+    }
+
+    select {
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: inherit;
+      padding: 6px 6px;
+      font-size: 0.75rem;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 16px 14px 14px; }
+      .row { flex-direction: column; }
+      button, input[type="text"] { width: 100%; }
+      select { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <header class="card-header">
+      <h2 class="title">Neon To‑Do</h2>
+      <div class="badge">HTML • CSS • JS</div>
+    </header>
+    <p class="subtitle">Type a task, choose priority, then press <strong>Add</strong> or hit <strong>Enter</strong>.</p>
+
+    <div class="row">
+      <input id="taskInput" type="text" placeholder="E.g. Finish JavaScript assignment" />
+      <select id="priority">
+        <option value="medium">Med</option>
+        <option value="low">Low</option>
+        <option value="high">High</option>
+      </select>
+      <button class="btn-primary" id="addBtn">Add</button>
+    </div>
+
+    <ul id="taskList"></ul>
+
+    <div class="footer">
+      <span id="countLabel">0 tasks</span>
+      <button id="clearBtn" class="btn-small btn-ghost">Clear completed</button>
+    </div>
+  </div>
+
+  <script>
+    const taskInput = document.getElementById('taskInput');
+    const prioritySelect = document.getElementById('priority');
+    const addBtn = document.getElementById('addBtn');
+    const list = document.getElementById('taskList');
+    const countLabel = document.getElementById('countLabel');
+    const clearBtn = document.getElementById('clearBtn');
+
+    function updateCount() {
+      const total = list.children.length;
+      const done = list.querySelectorAll('.done').length;
+      const left = total - done;
+      countLabel.textContent = total === 0
+        ? 'No tasks yet'
+        : left + ' left • ' + total + ' total';
+    }
+
+    function createTaskElement(text, priority) {
+      const li = document.createElement('li');
+
+      const main = document.createElement('div');
+      main.className = 'task-main';
+
+      const check = document.createElement('div');
+      check.className = 'check';
+      check.innerHTML = '&#10003;';
+
+      const span = document.createElement('div');
+      span.className = 'text';
+      span.textContent = text;
+
+      const chip = document.createElement('span');
+      chip.className = 'chip ' + priority;
+      chip.textContent = priority;
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-small btn-ghost text-danger';
+      delBtn.textContent = 'Delete';
+
+      check.addEventListener('click', () => {
+        li.classList.toggle('done');
+        updateCount();
+      });
+
+      span.addEventListener('click', () => {
+        li.classList.toggle('done');
+        updateCount();
+      });
+
+      delBtn.addEventListener('click', () => {
+        li.remove();
+        updateCount();
+      });
+
+      main.appendChild(check);
+      main.appendChild(span);
+
+      li.appendChild(main);
+      li.appendChild(chip);
+      li.appendChild(delBtn);
+
+      return li;
+    }
+
+    function addTask() {
+      const text = taskInput.value.trim();
+      if (!text) {
+        taskInput.focus();
+        taskInput.style.borderColor = '#fb7185';
+        setTimeout(() => taskInput.style.borderColor = 'rgba(148, 163, 184, 0.5)', 250);
+        return;
+      }
+      const priority = prioritySelect.value;
+      const item = createTaskElement(text, priority);
+      list.prepend(item);
+      taskInput.value = '';
+      taskInput.focus();
+      updateCount();
+    }
+
+    addBtn.addEventListener('click', addTask);
+    taskInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addTask();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      const doneItems = list.querySelectorAll('.done');
+      if (doneItems.length === 0) return;
+      doneItems.forEach(el => el.remove());
+      updateCount();
+    });
+
+    // Demo: starter tasks so the UI does not look empty
+    ['Read project brief', 'Design layout', 'Write JavaScript code'].forEach((t, i) => {
+      const p = i === 0 ? 'high' : i === 1 ? 'medium' : 'low';
+      list.appendChild(createTaskElement(t, p));
+    });
+    updateCount();
+  </script>
+</body>
+</html>
